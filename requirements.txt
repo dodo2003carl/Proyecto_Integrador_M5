@@ -16,3 +16,4 @@ uvicorn[standard]
 matplotlib
 scipy
 feature-engine
+streamlit

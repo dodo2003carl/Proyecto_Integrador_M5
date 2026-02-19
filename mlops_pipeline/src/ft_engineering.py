@@ -58,15 +58,17 @@ def feature_engineering(df, target_col='Pago_atiempo'):
     # Numéricas: float64 e int64 (excepto categoicas ya conocidas)
     numeric_cols = X.select_dtypes(include=['int64', 'float64']).columns.tolist()
     
-    # Categóricas Nominales: object
-    categorical_cols = X.select_dtypes(include=['object']).columns.tolist()
+    # Categóricas Nominales: object/string
+    # Categóricas Nominales: object/string (excluyendo ordinales si se separan)
+    # Por defecto todo lo string. Si separamos 'tendencia_ingresos':
+    nominal_cols = [c for c in X.select_dtypes(include=['object', 'string']).columns if c != 'tendencia_ingresos']
+    ordinal_cols = ['tendencia_ingresos'] if 'tendencia_ingresos' in X.columns else []
     
-    # Nota: 'tipo_credito' es int64 pero conceptualmente podría ser categórica. 
-    # Si tiene muchos niveles numéricos y orden, se puede dejar numérica. 
-    # 'tipo_laboral' y 'tendencia_ingresos' son object -> Categóricas.
+    categorical_cols = nominal_cols + ordinal_cols # Para debug
     
     print(f"Variables Numéricas ({len(numeric_cols)}): {numeric_cols}")
-    print(f"Variables Categóricas ({len(categorical_cols)}): {categorical_cols}")
+    print(f"Variables Nominales ({len(nominal_cols)}): {nominal_cols}")
+    print(f"Variables Ordinales ({len(ordinal_cols)}): {ordinal_cols}")
 
     
     # Pre-procesamiento: Asegurar tipos explícitamente para evitar errores de OneHotEncoder con int/str
@@ -101,14 +103,19 @@ def feature_engineering(df, target_col='Pago_atiempo'):
     # Pre-procesamiento: Asegurar tipos
     X[categorical_cols] = X[categorical_cols].astype(str)
     
-    # Pipeline Ordinal (si hubiera): 
-    # En este caso 'tendencia_ingresos' podría ser ordinal, pero OneHot funciona bien para empezar.
+    # Pipeline Ordinal: Imputación + OrdinalEncoder
+    # 'tendencia_ingresos'
+    ordinal_transformer = Pipeline(steps=[
+        ('imputer', SimpleImputer(strategy='most_frequent')), # O constante
+        ('ordinal', OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1))
+    ])
     
     # ColumnTransformer
     preprocessor = ColumnTransformer(
         transformers=[
             ('num', numeric_transformer, numeric_cols),
-            ('cat', categorical_transformer, categorical_cols)
+            ('nom', categorical_transformer, nominal_cols),
+            ('ord', ordinal_transformer, ordinal_cols)
         ],
         remainder='drop' # Elimina columnas no especificadas
     )
@@ -122,8 +129,14 @@ def feature_engineering(df, target_col='Pago_atiempo'):
     # Intento de obtener nombres de features
     try:
         num_names = numeric_cols
-        cat_names = preprocessor.named_transformers_['cat']['onehot'].get_feature_names_out(categorical_cols)
-        feature_names = np.r_[num_names, cat_names]
+        
+        # Nombres de nominales (OneHot)
+        nom_names = preprocessor.named_transformers_['nom']['onehot'].get_feature_names_out(nominal_cols)
+        
+        # Nombres de ordinales (Ordinal) - mantienen el nombre original
+        ord_names = ordinal_cols
+        
+        feature_names = np.r_[num_names, nom_names, ord_names]
         
         X_train_df = pd.DataFrame(X_train_processed, columns=feature_names, index=X_train.index)
         X_test_df = pd.DataFrame(X_test_processed, columns=feature_names, index=X_test.index)
