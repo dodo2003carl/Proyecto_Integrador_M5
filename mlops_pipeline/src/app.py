@@ -85,19 +85,19 @@ def load_and_process_data():
         # Esto es mucho más valioso para el negocio.
         
         # Simular datos actuales (Current) con Drift (EN VARIABLES REALES)
-        if 'salario_cliente' in X_curr_final.columns:
-            # Simulamos que los nuevos clientes tienen ingresos mucho mayores (+40%)
-            X_curr_final['salario_cliente'] = X_curr_final['salario_cliente'] * 1.40 
-            
-        if 'edad_cliente' in X_curr_final.columns:
-            # Simulamos que los nuevos clientes son más jóvenes (-5 años)
-            X_curr_final['edad_cliente'] = X_curr_final['edad_cliente'] - 5
-            
-        if 'tipo_laboral' in X_curr_final.columns:
-            # Simulamos un cambio drástico en las categorías educativas o laborales
-            mask = np.random.rand(len(X_curr_final)) < 0.3
-            # Asignamos una categoría que sepamos que hace ruido o la primera disponible
-            X_curr_final.loc[mask, 'tipo_laboral'] = X_curr_final['tipo_laboral'].mode()[0]
+        # if 'salario_cliente' in X_curr_final.columns:
+        #     # Simulamos que los nuevos clientes tienen ingresos mucho mayores (+40%)
+        #     X_curr_final['salario_cliente'] = X_curr_final['salario_cliente'] * 1.40 
+        #     
+        # if 'edad_cliente' in X_curr_final.columns:
+        #     # Simulamos que los nuevos clientes son más jóvenes (-5 años)
+        #     X_curr_final['edad_cliente'] = X_curr_final['edad_cliente'] - 5
+        #     
+        # if 'tipo_laboral' in X_curr_final.columns:
+        #     # Simulamos un cambio drástico en las categorías educativas o laborales
+        #     mask = np.random.rand(len(X_curr_final)) < 0.3
+        #     # Asignamos una categoría que sepamos que hace ruido o la primera disponible
+        #     X_curr_final.loc[mask, 'tipo_laboral'] = X_curr_final['tipo_laboral'].mode()[0]
 
         return X_ref_final, X_curr_final, y_train_proc, y_test_proc
         
