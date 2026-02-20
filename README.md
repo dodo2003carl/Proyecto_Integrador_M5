@@ -262,6 +262,8 @@ uvicorn mlops_pipeline.src.model_deploy:app --host 0.0.0.0 --port 8000 --reload
 ```
 La documentación interactiva (Swagger) estará en `http://localhost:8000/docs`.
 
+![Swagger UI de FastAPI](imagenes/api_screenshot.png)
+
 ### Contenedorización con Docker
 
 Para construir y ejecutar todo el proyecto (API) en un contenedor Docker:
