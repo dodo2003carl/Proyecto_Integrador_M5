@@ -85,8 +85,18 @@ def load_and_process_data():
         # Esto es mucho más valioso para el negocio.
         
         # Simular datos actuales (Current) con Drift (EN VARIABLES REALES)
-        # if 'salario_cliente' in X_curr_final.columns:
-        #    X_curr_final['salario_cliente'] = X_curr_final['salario_cliente'] * 1.2  # +20% salario real
+        if 'ingresos_anuales' in X_curr_final.columns:
+            # Simulamos que los nuevos clientes tienen ingresos mucho mayores (+40%)
+            X_curr_final['ingresos_anuales'] = X_curr_final['ingresos_anuales'] * 1.40 
+            
+        if 'edad' in X_curr_final.columns:
+            # Simulamos que los nuevos clientes son más jóvenes (-5 años)
+            X_curr_final['edad'] = X_curr_final['edad'] - 5
+            
+        if 'nivel_educativo' in X_curr_final.columns:
+            # Simulamos un cambio drástico en las categorías educativas
+            mask = np.random.rand(len(X_curr_final)) < 0.3
+            X_curr_final.loc[mask, 'nivel_educativo'] = 'Universitario'
 
         return X_ref_final, X_curr_final, y_train_proc, y_test_proc
         
