@@ -18,4 +18,4 @@ scipy
 feature-engine
 streamlit
 plotly
-altair
+altair<5.0.0
