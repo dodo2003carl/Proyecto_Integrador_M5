@@ -18,3 +18,4 @@ scipy
 feature-engine
 streamlit
 plotly
+altair
