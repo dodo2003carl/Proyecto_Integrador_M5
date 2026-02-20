@@ -241,18 +241,39 @@ El dashboard incluye visualizaciones de nivel profesional para diagnóstico prof
 
 ### Ejecución del Pipeline
 
-Para generar los artefactos del modelo y procesar los datos, ejecuta el notebook de entrenamiento o el script de features:
+Para generar los artefactos del modelo y procesar los datos, ejecuta el script de modelo o el de features (esto guardará el `modelo_final.pkl` localmente):
 ```bash
-python mlops_pipeline/src/ft_engineering.py
+python mlops_pipeline/src/save_model.py
 ```
 
-### Lanzamiento del Dashboard
+### Lanzamiento del Dashboard Streamlit
 
 Para iniciar la interfaz de monitoreo:
 ```bash
 streamlit run mlops_pipeline/src/app.py
 ```
-Accede a la URL local proporcionada (usualmente `http://localhost:8501`).
+Accede a la URL local (usualmente `http://localhost:8501`).
+
+### Despliegue de API con FastAPI
+
+Para levantar la API REST de predicción en tiempo real:
+```bash
+uvicorn mlops_pipeline.src.model_deploy:app --host 0.0.0.0 --port 8000 --reload
+```
+La documentación interactiva (Swagger) estará en `http://localhost:8000/docs`.
+
+### Contenedorización con Docker
+
+Para construir y ejecutar todo el proyecto (API) en un contenedor Docker:
+1. **Construir la imagen:**
+```bash
+docker build -t mlops-api .
+```
+2. **Ejecutar el contenedor:**
+```bash
+docker run -p 8000:8000 mlops-api
+```
+La API estará disponible en el puerto 8000.
 
 ---
 
