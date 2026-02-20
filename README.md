@@ -289,6 +289,8 @@ El análisis de SonarCloud evalúa automáticamente:
 3. **Cobertura de Pruebas:** Se han implementado pruebas en `tests/test_api.py` (usando `pytest` y `httpx`) que alcanzan una alta cobertura en la lógica de la API de predicción, reportado vía `coverage.xml`.
 4. **Integridad y Estilo:** Validando las convenciones contra las reglas y Quality Gates de SonarQube.
 
+![SonarCloud Dashboard](imagenes/sonarcloud_dashboard.png)
+
 ---
 
 ## 8. Conclusiones y Trabajo Futuro
