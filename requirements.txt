@@ -17,3 +17,4 @@ matplotlib
 scipy
 feature-engine
 streamlit
+plotly
