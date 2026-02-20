@@ -279,6 +279,18 @@ La API estará disponible en el puerto 8000.
 
 ---
 
+## Extra Credit: Integración con SonarCloud
+
+Este repositorio cuenta con un pipeline de CI/CD extendido usando GitHub Actions que se integra con SonarCloud para realizar Análisis Estático de Código.
+
+El análisis de SonarCloud evalúa automáticamente:
+1. **Calidad del código:** Verificando mantenibilidad y deuda técnica.
+2. **Seguridad:** Detectando vulnerabilidades y Security Hotspots.
+3. **Cobertura de Pruebas:** Se han implementado pruebas en `tests/test_api.py` (usando `pytest` y `httpx`) que alcanzan una alta cobertura en la lógica de la API de predicción, reportado vía `coverage.xml`.
+4. **Integridad y Estilo:** Validando las convenciones contra las reglas y Quality Gates de SonarQube.
+
+---
+
 ## 8. Conclusiones y Trabajo Futuro
 
 ### Conclusiones
