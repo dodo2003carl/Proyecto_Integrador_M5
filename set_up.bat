@@ -18,26 +18,10 @@ echo Buscando código del proyecto en config.json...
 @echo off
 setlocal EnableDelayedExpansion
 
-REM Cambiar al directorio donde está config.json
-if not exist "src\config.json" (
-    echo Error: No se encontró "config.json" en el directorio "src". Asegúrate de que la ruta es correcta.
-    goto :eof
-)
+REM Hardcodeando el project_code ya que config.json no existe en este proyecto
+set "project_code=mlops"
 
-cd src
-
-for /f "usebackq tokens=2 delims=:" %%A in (`findstr "project_code" config.json`) do (
-    set "line=%%A"
-    set "line=!line:,=!"
-    set "line=!line:"=!"
-    set "project_code=!line:~1!"
-)
-
-
-echo Project code encontrado: [%project_code%]
-
-REM Volver al directorio raíz
-cd ..
+echo Project code: [%project_code%]
 
 echo Creando nuevo ambiente virtual: %project_code%-venv
 py -m venv %project_code%-venv
