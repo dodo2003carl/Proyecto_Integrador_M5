@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 import joblib
 from sklearn.ensemble import RandomForestClassifier
-from ft_engineering import cargar_datos, feature_engineering
+from mlops_pipeline.src.ft_engineering import cargar_datos, feature_engineering
 import platform
 
 def train_and_save():

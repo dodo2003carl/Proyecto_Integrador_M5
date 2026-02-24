@@ -5,10 +5,14 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
-from mlops_pipeline.src.model_monitoring import ModelMonitor
-from mlops_pipeline.src.ft_engineering import cargar_datos, feature_engineering
+import mlops_pipeline.src.model_monitoring as mm
+import mlops_pipeline.src.ft_engineering as fte
 import sys
 import os
+
+# Expose for testing
+_fte = fte
+_cargar_datos = fte.cargar_datos
 
 # Configuración de la página
 st.set_page_config(
@@ -131,16 +135,15 @@ def load_and_process_data():
     try:
         # Cargar datos originales (Referencia)
         if os.path.exists("Base_de_datos.xlsx"):
-            df = cargar_datos("Base_de_datos.xlsx")
+            df = _cargar_datos("Base_de_datos.xlsx")
         elif os.path.exists("../../Base_de_datos.xlsx"):
-             df = cargar_datos("../../Base_de_datos.xlsx")
+             df = _cargar_datos("../../Base_de_datos.xlsx")
         else:
             st.error("No se encontró el archivo de base de datos.")
             return None, None
             
         # 1. Obtener datos procesados (Numéricos/OneHot) + TARGETS REALES
-        # feature_engineering usa test_size=0.2 por defecto (ver ft_engineering.py)
-        X_train_proc, X_test_proc, y_train_proc, y_test_proc, _ = feature_engineering(df)
+        X_train_proc, X_test_proc, y_train_proc, y_test_proc, _ = fte.feature_engineering(df)
         
         # 2. Obtener datos CRUDOS (Categorías originales) para monitoreo legible
         from sklearn.model_selection import train_test_split
@@ -148,8 +151,8 @@ def load_and_process_data():
         X = df.drop(columns=[target_col])
         y = df[target_col]
         
-        # IMPORTANTE: Replicamos el split EXACTO de ft_engineering.py
-        X_train_raw, X_test_raw, _, _ = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y) # Asegurar 0.2
+        # IMPORTANTE: Replicamos el split EXACTO de ft_engineering.py (test_size=0.2, random_state=42, stratify=y)
+        X_train_raw, X_test_raw, _, _ = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
         
         # --- CAMBIO IMPORTANTE: PRIORIZAR DATOS CRUDOS ---
         # El usuario quiere ver gráficas "Correctas" (Valores reales: $5000, 30 años), no escalados (0.5, -1.2).
@@ -247,7 +250,7 @@ if df_ref is not None:
     st.sidebar.info("Este dashboard compara los datos de entrenamiento (Referencia) con los datos más recientes (Actual) para detectar degradación del modelo y realizar análisis multidimensional.")
 
     # Instanciar Monitor
-    monitor = ModelMonitor(df_ref, df_curr)
+    monitor = mm.ModelMonitor(df_ref, df_curr)
     
     # Calcular Métricas
     with st.spinner('Realizando análisis estadístico...'):

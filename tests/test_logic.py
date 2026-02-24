@@ -1,6 +1,7 @@
 import pytest
 import pandas as pd
 import numpy as np
+import os
 from pathlib import Path
 from mlops_pipeline.src.ft_engineering import cargar_datos, feature_engineering
 from mlops_pipeline.src.model_training_evaluation import evaluate_model
@@ -107,3 +108,98 @@ def test_training_main_logic(tmp_path, monkeypatch):
     
     assert (model_dir / "modelo_final.pkl").exists()
     assert (model_dir / "preprocesador.pkl").exists()
+
+def test_model_monitor_logic():
+    """Prueba la lógica de ModelMonitor con datos simulados"""
+    from mlops_pipeline.src.model_monitoring import ModelMonitor
+    df_ref = pd.DataFrame({
+        'a': [1, 2, 3, 4, 5], 
+        'b': ['x', 'y', 'x', 'y', 'x']
+    })
+    df_curr = pd.DataFrame({
+        'a': [1, 2, 10, 11, 12], 
+        'b': ['x', 'z', 'z', 'z', 'z']
+    })
+    monitor = ModelMonitor(df_ref, df_curr)
+    
+    ks_res = monitor.calculate_ks_test()
+    assert 'a' in ks_res
+    
+    psi_res = monitor.calculate_psi_numeric(buckets=2)
+    assert 'a' in psi_res
+    
+    chi_res = monitor.calculate_chi_square()
+    assert 'b' in chi_res
+    
+    js_res = monitor.calculate_jensen_shannon(buckets=2)
+    assert 'a' in js_res
+    
+    all_res = monitor.run_all_checks()
+    assert "ks_test" in all_res
+
+def test_save_model_main_logic(tmp_path, monkeypatch):
+    """Prueba la función de guardado de modelo"""
+    from mlops_pipeline.src.save_model import train_and_save
+    df_dummy = pd.DataFrame({
+        'salario_cliente': [1000] * 10,
+        'edad_cliente': [30] * 10,
+        'tipo_laboral': ['Fijo'] * 10,
+        'tendencia_ingresos': ['Estable'] * 10,
+        'Pago_atiempo': [1, 0] * 5
+    })
+    
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "models").mkdir()
+    
+    import mlops_pipeline.src.save_model as sm
+    monkeypatch.setattr(sm, "cargar_datos", lambda x: df_dummy)
+    
+    train_and_save()
+    assert (tmp_path / "models" / "modelo_final.pkl").exists()
+
+def test_dashboard_load_data_logic(monkeypatch):
+    """Prueba la lógica de carga de datos del dashboard (app.py)"""
+    # 1. Mock streamlit cache BEFORE any app imports
+    # Handle both @st.cache_data and @st.cache_data()
+    def mock_cache(f=None, **kwargs):
+        if f is None:
+            return lambda func: func
+        return f
+    monkeypatch.setattr("streamlit.cache_data", mock_cache)
+    
+    # 2. Mock os.path.exists to simulate file presence selectively
+    real_exists = os.path.exists
+    def mock_exists(path):
+        if "Base_de_datos.xlsx" in str(path):
+            return True
+        return real_exists(path)
+    monkeypatch.setattr("os.path.exists", mock_exists)
+
+    df_dummy = pd.DataFrame({
+        'salario_cliente': [1000, 2000, 3000, 4000, 5000, 1000, 2000, 3000, 4000, 5000],
+        'edad_cliente': [20, 30, 40, 50, 60, 20, 30, 40, 50, 60],
+        'tipo_laboral': ['Fijo', 'Fijo', 'Fijo', 'Fijo', 'Fijo', 'Fijo', 'Fijo', 'Fijo', 'Fijo', 'Fijo'],
+        'tendencia_ingresos': ['Estable', 'Estable', 'Estable', 'Estable', 'Estable', 'Estable', 'Estable', 'Estable', 'Estable', 'Estable'],
+        'id_cliente': range(10),
+        'fecha_prestamo': pd.date_range('2023-01-01', periods=10),
+        'Pago_atiempo': [1, 0] * 5
+    })
+    
+    # 3. Mock ft_engineering.cargar_datos globally
+    import mlops_pipeline.src.ft_engineering as fte_mod
+    monkeypatch.setattr(fte_mod, "cargar_datos", lambda x: df_dummy)
+
+    # 4. Now import app (this applies the mocks to app at definition time)
+    import mlops_pipeline.src.app as app_mod
+    
+    # 5. Explicitly patch app's internal aliases
+    monkeypatch.setattr(app_mod, "_cargar_datos", lambda x: df_dummy)
+    
+    # 6. Execute from the module to ensure we use the patched version
+    df_ref, df_curr, y_ref, y_curr = app_mod.load_and_process_data()
+    
+    assert df_ref is not None
+    assert 'id_cliente' not in df_ref.columns
+    # The counts should match the split logic (80/20 of 10 rows)
+    assert len(df_ref) == 8
+    assert len(df_curr) == 2
