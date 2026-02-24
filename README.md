@@ -94,22 +94,23 @@ El sistema sigue una arquitectura modular:
 ### 3.3 Estructura del Proyecto
 
 ```bash
-├── mlops_pipeline/
-│   ├── src/
-│   │   ├── Cargar_datos.ipynb          # Cuaderno para la ingesta y preparación inicial de datos.
-│   │   ├── comprension_eda.ipynb       # Análisis Exploratorio de Datos (EDA) detallado.
-│   │   ├── ft_engineering.py           # [CORE] Pipeline de transformación (imputación, scaling, encoding).
-│   │   ├── model_training_evaluation.py # Entrenamiento de modelos y evaluación de desempeño.
-│   │   ├── model_deploy.py             # Despliegue de API REST con FastAPI.
-│   │   ├── model_monitoring.py         # [MLOPS] Motor de detección de Data Drift y Concept Drift.
-│   │   └── app.py                      # [UI] Dashboard interactivo profesional en Streamlit.
-│   ├── __init__.py                     # Marcador de paquete para resolución de rutas.
-│   └── src/
-│       └── __init__.py                 # Marcador de paquete secundario.
-├── Base_de_datos.xlsx                  # Dataset fuente del proyecto.
-├── requirements.txt                    # Dependencias del sistema.
-├── .gitignore                          # Archivos excluidos de control de versiones.
-└── README.md                           # Documentación técnica completa.
+├── mlops_pipeline/             # Carpeta principal del pipeline de MLOps.
+│   ├── __init__.py             # Marcador de paquete para resolución de rutas.
+│   └── src/                    # Código fuente del sistema.
+│       ├── __init__.py         # Marcador de paquete secundario.
+│       ├── Cargar_datos.ipynb          # Cuaderno para la ingesta y preparación inicial de datos.
+│       ├── comprension_eda.ipynb       # Análisis Exploratorio de Datos (EDA) detallado y visualizaciones.
+│       ├── model_training.ipynb        # Laboratorio de experimentación y entrenamiento de modelos.
+│       ├── ft_engineering.py           # [CORE] Pipeline de transformación (imputación, scaling, encoding).
+│       ├── model_training_evaluation.py # Script para el entrenamiento masivo y evaluación de modelos.
+│       ├── model_deploy.py             # Lógica para el despliegue de la API REST con FastAPI.
+│       ├── model_monitoring.py         # [MLOPS] Motor estadístico para detección de Data y Concept Drift.
+│       ├── save_model.py               # Utilidad para entrenar y persistir el modelo final (.pkl).
+│       └── app.py                      # [UI] Interface de usuario (Dashboard) profesional en Streamlit.
+├── Base_de_datos.xlsx          # Dataset fuente principal en formato Excel.
+├── requirements.txt            # Lista de dependencias y librerías necesarias.
+├── .gitignore                  # Definición de archivos y carpetas excluidos de Git.
+└── README.md                   # Documentación técnica completa del proyecto.
 ```
 
 ---
