@@ -94,23 +94,18 @@ El sistema sigue una arquitectura modular:
 ### 3.3 Estructura del Proyecto
 
 ```bash
-mlops_pipeline/
-├── src/
-│   ├── ft_engineering.py       # [CORE] Pipeline de transformación de datos.
-│   │                           # Contiene lógica de imputación, scaling y encoding.
-│   │
-│   ├── model_training.ipynb    # [CORE] Laboratorio de Modelado.
-│   │                           # Entrenamiento, validación cruzada y selección de modelo.
-│   │
-│   ├── model_monitoring.py     # [MLOPS] Motor de cálculo de Data Drift.
-│   │                           # Implementa tests estadísticos (KS, Chi2, PSI).
-│   │
-│   └── app.py                  # [UI] Dashboard Frontend en Streamlit.
-│                               # Visualización interactiva y sistema de alertas.
-│
-├── Base_de_datos.xlsx          # Dataset fuente (Simulado/Real).
-├── requirements.txt            # Dependencias (pandas, sklearn, plotly, streamlit, scipy).
-└── README.md                   # Documentación detallada del proyecto.
+├── mlops_pipeline/
+│   └── src/
+│       ├── Cargar_datos.ipynb
+│       ├── comprension_eda.ipynb
+│       ├── ft_engineering.py
+│       ├── model_training_evaluation.py
+│       ├── model_deploy.py
+│       └── model_monitoring.py
+├── Base_de_datos.xlsx
+├── requirements.txt
+├── .gitignore
+└── README.md
 ```
 
 ---
