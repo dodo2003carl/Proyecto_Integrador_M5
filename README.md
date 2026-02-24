@@ -187,7 +187,7 @@ El sistema implementa tres pruebas estadísticas rigurosas para detectar "Drift"
 La aplicación `app.py` es el centro de comando para el equipo de MLOps.
 
 ### Evidencia: Dashboard en funcionamiento con segmentadores (Limpiado y Optimizado)
-![Dashboard Principal (Dark Theme)](C:\Users\DODY DUEÑAS\.gemini\antigravity\brain\8be593c9-70c7-49b4-a7f9-2e62179707f6\dashboard_bottom_clean_check_1771899361392.png)
+![Dashboard Principal (Dark Theme)](imagenes/dashboard_evidencia.png)
 
 *   **Estado de Salud del Modelo**: KPI principal que resume si el modelo es "Saludable", está en "Advertencia" o en estado "Crítico", basado en el % de variables con drift.
 *   **Análisis del Objetivo (Target Drift)**: Verifica si la proporción de Pagadores vs No Pagadores ha cambiado. Un cambio aquí es grave y requiere recalibración urgente.
@@ -266,7 +266,10 @@ uvicorn mlops_pipeline.src.model_deploy:app --host 0.0.0.0 --port 8000 --reload
 La documentación interactiva (Swagger) estará en `http://localhost:8000/docs`.
 
 ### Evidencia: API Dockerizada Evaluándose
-![Swagger UI de FastAPI](C:\Users\DODY DUEÑAS\.gemini\antigravity\brain\8be593c9-70c7-49b4-a7f9-2e62179707f6\api_docker_evidence_1771901872651.png)
+![Swagger UI de FastAPI](imagenes/api_docker_swagger.png)
+
+### Evidencia: Prueba de Predicción a la API con Datos (Docker)
+![Prueba de Predicción Exitosa](imagenes/api_predict_test.png)
 
 ### Contenedorización con Docker
 
