@@ -95,17 +95,21 @@ El sistema sigue una arquitectura modular:
 
 ```bash
 ├── mlops_pipeline/
+│   ├── src/
+│   │   ├── Cargar_datos.ipynb          # Cuaderno para la ingesta y preparación inicial de datos.
+│   │   ├── comprension_eda.ipynb       # Análisis Exploratorio de Datos (EDA) detallado.
+│   │   ├── ft_engineering.py           # [CORE] Pipeline de transformación (imputación, scaling, encoding).
+│   │   ├── model_training_evaluation.py # Entrenamiento de modelos y evaluación de desempeño.
+│   │   ├── model_deploy.py             # Despliegue de API REST con FastAPI.
+│   │   ├── model_monitoring.py         # [MLOPS] Motor de detección de Data Drift y Concept Drift.
+│   │   └── app.py                      # [UI] Dashboard interactivo profesional en Streamlit.
+│   ├── __init__.py                     # Marcador de paquete para resolución de rutas.
 │   └── src/
-│       ├── Cargar_datos.ipynb
-│       ├── comprension_eda.ipynb
-│       ├── ft_engineering.py
-│       ├── model_training_evaluation.py
-│       ├── model_deploy.py
-│       └── model_monitoring.py
-├── Base_de_datos.xlsx
-├── requirements.txt
-├── .gitignore
-└── README.md
+│       └── __init__.py                 # Marcador de paquete secundario.
+├── Base_de_datos.xlsx                  # Dataset fuente del proyecto.
+├── requirements.txt                    # Dependencias del sistema.
+├── .gitignore                          # Archivos excluidos de control de versiones.
+└── README.md                           # Documentación técnica completa.
 ```
 
 ---
