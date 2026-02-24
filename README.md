@@ -324,3 +324,6 @@ El análisis de SonarCloud evalúa automáticamente:
 
 ---
 *Este documento es parte de la entrega final del proyecto y sirve como evidencia de la implementación técnica y metodológica.*
+
+---
+**🚀 Dashboard en vivo (Streamlit Cloud):** [https://proyectointegradorm5-xxarlr4zualnhay8t2dguv.streamlit.app/](https://proyectointegradorm5-xxarlr4zualnhay8t2dguv.streamlit.app/)
