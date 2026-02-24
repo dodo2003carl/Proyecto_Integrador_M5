@@ -30,7 +30,7 @@ jobs:
         run: |
           # Añadir la ruta raíz al PYTHONPATH para que encuentre 'mlops_pipeline'
           export PYTHONPATH=$(pwd)
-          pytest tests/test_api.py --cov=mlops_pipeline.src --cov-report=xml
+          pytest tests/ --cov=mlops_pipeline.src --cov-report=xml
           
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master

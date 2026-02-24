@@ -13,7 +13,7 @@ import seaborn as sns
 # Importamos la función de ingeniería de características
 import sys
 # sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from ft_engineering import cargar_datos, feature_engineering
+from mlops_pipeline.src.ft_engineering import cargar_datos, feature_engineering
 
 def evaluate_model(model_name, model, X_test, y_test):
     """Evalúa un modelo y retorna sus métricas clave."""

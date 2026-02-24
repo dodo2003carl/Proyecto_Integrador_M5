@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
-from model_monitoring import ModelMonitor
-from ft_engineering import cargar_datos, feature_engineering
+from mlops_pipeline.src.model_monitoring import ModelMonitor
+from mlops_pipeline.src.ft_engineering import cargar_datos, feature_engineering
 import sys
 import os
 
