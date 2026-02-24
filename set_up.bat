@@ -1,5 +1,5 @@
 REM ===================================
-REM Author: juan.parra
+REM Author: Dody Dueñas
 REM Purpose: Script to setup a Python virtual environment, install requirements, 
 REM ===================================
 

@@ -13,31 +13,117 @@ import os
 # Configuración de la página
 st.set_page_config(
     page_title="Monitor de Modelos MLOps",
-    page_icon="🛡️",
+    page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Estilos CSS personalizados para una apariencia profesional
+# Estilos CSS Premium (Neo-Dark Theme + Glassmorphism)
 st.markdown("""
-    <style>
-    .main {
-        background-color: #f5f5f5;
-    }
-    .stMetric {
-        background-color: #ffffff;
-        padding: 15px;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    h1, h2, h3 {
-        color: #2c3e50;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+<style>
+    /* Importar fuente moderna y limpia */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 
-st.title("🛡️ Dashboard de Monitoreo de Modelos y Data Drift")
-st.markdown("Verificación continua de la salud del modelo y la estabilidad de los datos.")
+    /* Variables CSS Globales */
+    :root {
+        --bg-color: #0e1117;
+        --card-bg: rgba(255, 255, 255, 0.05);
+        --text-color: #f0f2f6;
+        --accent-glow: #00f2fe;
+        --border-color: rgba(255,255,255,0.1);
+    }
+
+    html, body, [class*="css"]  {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .main {
+        background: linear-gradient(135deg, #0f1523 0%, #000000 100%);
+        color: var(--text-color);
+    }
+    /* ---------------------------------------------------
+       ESTILIZACIÓN DE UI (Glassmorphism & Neumorphism)
+       --------------------------------------------------- */
+
+    /* Títulos principales */
+    h1 {
+        font-weight: 700 !important;
+        background: -webkit-linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 20px;
+        text-shadow: 0 4px 10px rgba(0,242,254,0.1);
+    }
+
+    h2, h3 {
+        color: #e2e8f0 !important;
+        font-weight: 600 !important;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 10px;
+        margin-top: 30px;
+    }
+
+    /* Estilización de Bloques de Métricas (Glassmorphism) */
+    div[data-testid="stMetricValue"] {
+        font-weight: bold;
+    }
+    
+    div[data-testid="stMetricLabel"] label p {
+        color: #a0aec0 !important;
+    }
+    
+    div[data-testid="stMetric"] {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    div[data-testid="stMetric"]:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px 0 rgba(0, 242, 254, 0.2);
+        border: 1px solid rgba(0, 242, 254, 0.3);
+    }
+
+    /* Fix para Tabs Headers */
+    button[data-baseweb="tab"] {
+        background-color: transparent !important;
+        border: none !important;
+    }
+    button[data-baseweb="tab"][aria-selected="true"] {
+        border-bottom: 2px solid #00f2fe !important;
+    }
+
+    /* Personalizar Sidebar */
+    section[data-testid="stSidebar"] {
+        background-color: #1a1e26;
+        border-right: 1px solid var(--border-color);
+    }
+
+    hr {
+        border-color: var(--border-color) !important;
+    }
+
+    /* Botones y Sliders */
+    .stSlider > div[data-baseweb="slider"] {
+        background-color: transparent !important;
+    }
+    
+    /* Texto Expander */
+    summary p {
+        color: #00f2fe !important;
+        font-weight: 600;
+    }
+
+</style>
+""", unsafe_allow_html=True)
+
+st.title("🤖 Centro de Comando MLOps & Data Drift")
+st.markdown("<p style='font-size: 1.1em; color: #a0aec0;'>Sistema avanzado de monitoreo en tiempo real para detección de degradación de modelos.</p>", unsafe_allow_html=True)
 
 @st.cache_data
 def load_and_process_data():
@@ -109,14 +195,56 @@ df_ref, df_curr, y_ref, y_curr = load_and_process_data()
 
 if df_ref is not None:
     # Sidebar
-    st.sidebar.title("Configuración")
+    st.sidebar.title("⚙️ Configuración")
     st.sidebar.markdown("---")
     # Ajustamos el default a 0.001 para ser menos sensibles al "ruido" natural entre splits
     confidence_level = st.sidebar.slider("Nivel de Confianza (p-value)", 0.001, 0.10, 0.001, format="%.3f")
     psi_threshold = st.sidebar.slider("Umbral PSI (Alerta)", 0.1, 0.5, 0.2)
     
     st.sidebar.markdown("---")
-    st.sidebar.info("Este dashboard compara los datos de entrenamiento (Referencia) con los datos más recientes (Actual) para detectar degradación del modelo.")
+    st.sidebar.subheader("🔎 Segmentadores (Filtros)")
+    
+    # Filtro Tipo Laboral
+    if 'tipo_laboral' in df_ref.columns:
+        tipos_laborales = list(df_ref['tipo_laboral'].dropna().unique())
+        selected_laboral = st.sidebar.multiselect("Tipo Laboral", options=tipos_laborales, default=tipos_laborales)
+        if selected_laboral:
+            mask_ref = df_ref['tipo_laboral'].isin(selected_laboral)
+            mask_curr = df_curr['tipo_laboral'].isin(selected_laboral)
+            df_ref = df_ref[mask_ref]
+            y_ref = y_ref[mask_ref]
+            df_curr = df_curr[mask_curr]
+            y_curr = y_curr[mask_curr]
+            
+    # Filtro Edad Cliente
+    if 'edad_cliente' in df_ref.columns:
+        min_edad = int(min(df_ref['edad_cliente'].min(), df_curr['edad_cliente'].min()))
+        max_edad = int(max(df_ref['edad_cliente'].max(), df_curr['edad_cliente'].max()))
+        selected_edad = st.sidebar.slider("Rango de Edad", min_value=min_edad, max_value=max_edad, value=(min_edad, max_edad))
+        
+        mask_edad_ref = (df_ref['edad_cliente'] >= selected_edad[0]) & (df_ref['edad_cliente'] <= selected_edad[1])
+        mask_edad_curr = (df_curr['edad_cliente'] >= selected_edad[0]) & (df_curr['edad_cliente'] <= selected_edad[1])
+        df_ref = df_ref[mask_edad_ref]
+        y_ref = y_ref[mask_edad_ref]
+        df_curr = df_curr[mask_edad_curr]
+        y_curr = y_curr[mask_edad_curr]
+
+    # Filtro Tendencia Ingresos
+    if 'tendencia_ingresos' in df_ref.columns:
+        # Aseguramos solo categorías limpias definidas por negocio
+        tendencias = ['Creciente', 'Estable', 'Decreciente']
+        if tendencias:
+            selected_tendencia = st.sidebar.multiselect("Tendencia Ingresos", options=tendencias, default=tendencias)
+            if selected_tendencia:
+                mask_tend_ref = df_ref['tendencia_ingresos'].isin(selected_tendencia)
+                mask_tend_curr = df_curr['tendencia_ingresos'].isin(selected_tendencia)
+                df_ref = df_ref[mask_tend_ref]
+                y_ref = y_ref[mask_tend_ref]
+                df_curr = df_curr[mask_tend_curr]
+                y_curr = y_curr[mask_tend_curr]
+
+    st.sidebar.markdown("---")
+    st.sidebar.info("Este dashboard compara los datos de entrenamiento (Referencia) con los datos más recientes (Actual) para detectar degradación del modelo y realizar análisis multidimensional.")
 
     # Instanciar Monitor
     monitor = ModelMonitor(df_ref, df_curr)
@@ -181,8 +309,9 @@ if df_ref is not None:
 
     with col_tgt2:
         fig_tgt = px.histogram(tgt_df, x="Clase", color="Dataset", barmode="group", 
-                             color_discrete_map={'Referencia': '#3498db', 'Actual': '#e74c3c'},
-                             text_auto=True)
+                             color_discrete_map={'Referencia': '#00f2fe', 'Actual': '#ff0844'},
+                             text_auto=True, template="plotly_dark")
+        fig_tgt.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(fig_tgt, use_container_width=True)
 
     # Alertas
@@ -275,7 +404,9 @@ if df_ref is not None:
                 fig_ecdf = px.ecdf(pd.DataFrame({
                     'Valor': np.concatenate([df_ref[selected_var], df_curr[selected_var]]),
                     'Dataset': ['Referencia']*len(df_ref) + ['Actual']*len(df_curr)
-                }), x="Valor", color="Dataset", color_discrete_map={'Referencia': '#3498db', 'Actual': '#2ecc71'})
+                }), x="Valor", color="Dataset", color_discrete_map={'Referencia': '#00f2fe', 'Actual': '#ff0844'},
+                template="plotly_dark")
+                fig_ecdf.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
                 st.plotly_chart(fig_ecdf, use_container_width=True)
                 
             with col_graph2:
@@ -286,7 +417,8 @@ if df_ref is not None:
                 })
                 # Violin plot es más "profesional" y denso que boxplot
                 fig2 = px.violin(data_combined, x="Dataset", y="Valor", color="Dataset", box=True, points="all",
-                               color_discrete_map={'Referencia': '#3498db', 'Actual': '#e74c3c'})
+                               color_discrete_map={'Referencia': '#00f2fe', 'Actual': '#ff0844'}, template="plotly_dark")
+                fig2.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
                 st.plotly_chart(fig2, use_container_width=True)
             
             # Gráfico de dispersión 3D (Solo por elegancia visual si hay otra variable numérica)
@@ -303,8 +435,8 @@ if df_ref is not None:
                 
                 fig_3d = px.scatter_3d(df_3d, x=selected_var, y=var2, z=var3, color='Color',
                                      title=f"Interacción 3D: {selected_var} vs {var2} vs {var3}",
-                                     opacity=0.7, color_discrete_sequence=px.colors.qualitative.Bold)
-                fig_3d.update_layout(margin=dict(l=0, r=0, b=0, t=30), height=500)
+                                     opacity=0.7, color_discrete_sequence=px.colors.qualitative.Bold, template="plotly_dark")
+                fig_3d.update_layout(margin=dict(l=0, r=0, b=0, t=30), height=500, paper_bgcolor="rgba(0,0,0,0)")
                 st.plotly_chart(fig_3d, use_container_width=True)
             
         else:
@@ -340,10 +472,11 @@ if df_ref is not None:
             prop_df = pd.concat([val_counts_ref, val_counts_curr])
             
             fig = px.bar(prop_df, x=selected_var, y="Proporción", color="Dataset", barmode="group", 
-                         color_discrete_map={'Referencia': '#3498db', 'Actual': '#e74c3c'})
+                         color_discrete_map={'Referencia': '#00f2fe', 'Actual': '#ff0844'}, template="plotly_dark")
             
             # Forzar eje X a categoría para evitar que Plotly trate números como rango continuo
             fig.update_xaxes(type='category', categoryorder='total descending')
+            fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
             st.plotly_chart(fig, use_container_width=True)
 
     # --- NUEVA SECCIÓN: Galería de Gráficos (Para cumplir meta de 20 gráficos) ---
@@ -388,7 +521,34 @@ if df_ref is not None:
                 else:
                     # Mini bar chart for categorical
                     st.caption(f"📊 {var_name} (Cat)")
-
+                    
+                    val_ref = df_ref[var_name].astype(str).value_counts(normalize=True).head(5)
+                    df_mini_ref = pd.DataFrame({'Cat': val_ref.index, 'Prop': val_ref.values, 'Set': 'Ref'})
+                    
+                    val_curr = df_curr[var_name].astype(str).value_counts(normalize=True).head(5)
+                    df_mini_curr = pd.DataFrame({'Cat': val_curr.index, 'Prop': val_curr.values, 'Set': 'Act'})
+                    
+                    mini_df_cat = pd.concat([df_mini_ref, df_mini_curr])
+                    
+                    # Forzar a string para que no ordene como número
+                    mini_df_cat['Cat'] = mini_df_cat['Cat'].astype(str)
+                    
+                    fig_mini_cat = px.bar(mini_df_cat, x="Cat", y="Prop", color="Set", barmode="group",
+                                         color_discrete_map={'Ref': '#00f2fe', 'Act': '#ff0844'}, template="plotly_dark",
+                                         text="Cat") # Mostrar el nombre de la categoría en la barra
+                                         
+                    fig_mini_cat.update_traces(textposition='inside', textfont=dict(size=9, color='white'))
+                    fig_mini_cat.update_xaxes(type='category', showticklabels=False, title=None)
+                    
+                    fig_mini_cat.update_layout(
+                        showlegend=False,
+                        margin=dict(l=0, r=0, t=5, b=0),
+                        height=130, # Ajustado para dejar espacio al caption
+                        yaxis=dict(showticklabels=False, title=None),
+                        paper_bgcolor="rgba(0,0,0,0)",
+                        plot_bgcolor="rgba(0,0,0,0)"
+                    )
+                    st.plotly_chart(fig_mini_cat, use_container_width=True, config={'displayModeBar': False})
     # --- NUEVA SECCIÓN: Mapa de Calor ---
     st.markdown("---")
     st.header("5. Análisis de Correlaciones")

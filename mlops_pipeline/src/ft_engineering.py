@@ -141,13 +141,13 @@ def feature_engineering(df, target_col='Pago_atiempo'):
         X_train_df = pd.DataFrame(X_train_processed, columns=feature_names, index=X_train.index)
         X_test_df = pd.DataFrame(X_test_processed, columns=feature_names, index=X_test.index)
     except Exception as e:
-        print(f"Advertencia: No se pudieron recuperar los nombres de las features: {e}")
+        # print(f"Advertencia: No se pudieron recuperar los nombres de las features: {e}")
         X_train_df = pd.DataFrame(X_train_processed)
         X_test_df = pd.DataFrame(X_test_processed)
 
-    print("Ingeniería de características completada.")
-    print(f"Shape Train: {X_train_df.shape}")
-    print(f"Shape Test: {X_test_df.shape}")
+    # print("Ingeniería de características completada.")
+    # print(f"Shape Train: {X_train_df.shape}")
+    # print(f"Shape Test: {X_test_df.shape}")
     
     return X_train_df, X_test_df, y_train, y_test, preprocessor
 
