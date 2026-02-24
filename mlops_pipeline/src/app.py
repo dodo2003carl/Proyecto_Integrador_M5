@@ -1,3 +1,13 @@
+import sys
+import os
+from pathlib import Path
+
+# Fix path resolution for Streamlit Cloud
+# app.py is in mlops_pipeline/src/, so project root is 2 levels up
+root_path = str(Path(__file__).resolve().parents[2])
+if root_path not in sys.path:
+    sys.path.append(root_path)
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -7,8 +17,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import mlops_pipeline.src.model_monitoring as mm
 import mlops_pipeline.src.ft_engineering as fte
-import sys
-import os
 
 # Expose for testing
 _fte = fte
